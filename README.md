@@ -6,6 +6,8 @@ This plugin provides a video player based on ExoPlayer.
 The player accepts HTTP(S) URLs, file paths, Android Content URIs, FsUri values used by [tauri_plugin_android_fs](https://crates.io/crates/tauri-plugin-android-fs), custom data providers, and other sources.
 It supports common video and audio formats, as well as HLS and DASH. See [supported-formats](https://developer.android.com/media/media3/exoplayer/supported-formats) for details.
 
+![demo image](https://raw.githubusercontent.com/aiueo13/tauri-plugin-android-player/main/assets/video-player-demo.webp)
+
 **NOTE**: This page explains how to use this plugin in the Rust backend. For JavaScript bindings in the frontend, see [tauri-plugin-android-player-api on npm](https://www.npmjs.com/package/tauri-plugin-android-player-api?activeTab=readme).
 
 # Setup

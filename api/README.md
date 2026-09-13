@@ -3,6 +3,8 @@ Note: **I’m using a translation tool, so some expressions may be awkward or in
 # Overview
 This plugin provides a video player based on ExoPlayer.
 
+![demo image](https://raw.githubusercontent.com/aiueo13/tauri-plugin-android-player/main/assets/video-player-demo.webp)
+
 # Setup
 First, install the plugin to your Tauri project:
 
