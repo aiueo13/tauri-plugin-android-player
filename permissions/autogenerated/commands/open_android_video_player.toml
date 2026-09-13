@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-open-android-video-player"
+description = "Enables the open_android_video_player command without any pre-configured scope."
+commands.allow = ["open_android_video_player"]
+
+[[permission]]
+identifier = "deny-open-android-video-player"
+description = "Denies the open_android_video_player command without any pre-configured scope."
+commands.deny = ["open_android_video_player"]

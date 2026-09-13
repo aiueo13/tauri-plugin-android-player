@@ -1,0 +1,39 @@
+[package]
+name = "tauri-plugin-android-player"
+authors = ["OkaYu"]
+keywords = ["tauri","plugin", "android", "video", "player"]
+description = "Media player for Tauri on Android"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.77.2"
+exclude = [
+    "/api",
+    "/assets",
+    "target",
+    "android/.gradle/",
+    "android/local.properties",
+    "android/.idea",
+    "android/gradle",
+    "android/gradlew",
+    "android/gradlew.bat",
+]
+links = "tauri-plugin-android-player"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/aiueo13/tauri-plugin-android-player"
+readme = "README.md"
+
+[dependencies]
+tauri = { version = "^2.8.2", default-features = false }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+thiserror = "2"
+tauri-plugin-fs = "2"
+
+[target.'cfg(target_os = "android")'.dependencies]
+jni = "0.21"
+
+[build-dependencies]
+tauri-plugin = { version = "^2.4", features = ["build"] }
+
+[dev-dependencies]
+tauri-plugin-android-fs = "29"
