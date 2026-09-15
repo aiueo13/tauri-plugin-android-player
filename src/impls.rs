@@ -1,20 +1,17 @@
 #![cfg(target_os = "android")]
 use std::collections::HashMap;
 use std::fmt::Display;
-use std::ops::Deref;
-use std::ops::DerefMut;
 use std::panic;
 use std::panic::AssertUnwindSafe;
 use std::sync::Arc;
 use std::sync::LazyLock;
 use std::sync::Mutex as SyncMutex;
-use jni::objects::AutoElements;
+use std::sync::TryLockError;
 use jni::objects::JThrowable;
 use jni::objects::JValue;
 use jni::objects::ReleaseMode;
 use jni::objects::{JByteArray, JClass};
 use jni::JNIEnv;
-use jni::sys::jbyte;
 use jni::sys::jint;
 use jni::sys::jlong;
 use crate::utils::ScopeGuard;
@@ -104,8 +101,12 @@ unsafe extern "system" fn Java_okayu_tauri_plugin_android_player_MediaStreamBrid
 
             // SAFETY:
             // 存在期間中に他の Rust thread や Java thread から同じ配列にアクセスされず、
-            // 同じ配列に対する ByteArrayBuf が複数存在しない。
-            let mut buf = unsafe { ByteArrayBuf::new(&mut env, &buf) }?;
+            // 同じ配列に対する AutoElements が複数存在しない。
+            let mut buf_array = env
+                .get_array_elements(&buf, ReleaseMode::CopyBack)
+                .map_err(|err| DataSourceError::io_unspecified(err))?;
+
+            let buf: &mut [u8] = bytemuck::cast_slice_mut(&mut buf_array);
 
             let buf_end = buf_offset
                 .checked_add(len)
@@ -173,49 +174,8 @@ fn throw_media_stream_exception<'local>(
     }
 }
 
-struct ByteArrayBuf<'local, 'other_local, 'env>(
-    AutoElements<'local, 'other_local, 'env, jbyte>,
-);
-
-impl<'local, 'other_local, 'env> ByteArrayBuf<'local, 'other_local, 'env> {
-
-    /// # SAFETY
-    /// 返される ByteArrayBuf の存在期間中に他の Rust thread や Java thread から同じ配列にアクセスされず、
-    /// 同じ配列に対する ByteArrayBuf が複数存在しない。
-    pub unsafe fn new(
-        env: &'env mut JNIEnv<'local>,
-        array: &'other_local JByteArray<'other_local>,
-    ) -> Result<Self, DataSourceError> {
-
-        let array = env
-            .get_array_elements(&array, ReleaseMode::CopyBack)
-            .map_err(|err| DataSourceError::io_unspecified(err))?;
-
-        Ok(Self(array))
-    }
-}
-
-impl Deref for ByteArrayBuf<'_, '_, '_> {
-    type Target = [u8];
-
-    fn deref(&self) -> &[u8] {
-        bytemuck::cast_slice(&self.0)
-    }
-}
-
-impl DerefMut for ByteArrayBuf<'_, '_, '_> {
-
-    fn deref_mut(&mut self) -> &mut [u8] {
-        bytemuck::cast_slice_mut(&mut self.0)
-    }
-}
-
 mod media_stream {
-    use std::sync::TryLockError;
-
     use super::*;
-
-    pub type DataSourceOpener = Box<dyn FnMut() -> Result<Box<dyn DataSource>, DataSourceError> + Send + 'static>;
     
     struct MediaStream {
         opener: DataSourceOpener,

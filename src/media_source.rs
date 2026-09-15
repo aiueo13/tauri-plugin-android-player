@@ -8,8 +8,10 @@ pub struct MediaSource {
 pub(crate) enum MediaSourceRepr {
     Uri(String),
     Path(std::path::PathBuf),
-    CustomProvider(Box<dyn FnMut() -> Result<Box<dyn DataSource>, DataSourceError> + Send + 'static>)
+    CustomProvider(DataSourceOpener)
 }
+
+pub(crate) type DataSourceOpener = Box<dyn FnMut() -> Result<Box<dyn DataSource>, DataSourceError> + Send + 'static>;
 
 impl MediaSource {
 
@@ -380,10 +382,15 @@ impl<C: Read + Seek + Send + 'static> DataSource for ReadSeekDataSource<C> {
         let mut totaln = 0;
         loop {
             let buf = &mut buf[totaln..];
+            if buf.is_empty() {
+                break;
+            }
+
             let n = with_retry_if_io_interrupted(|| self.read_seek.read(buf))?;
             if n == 0 {
-                break
+                break;
             }
+
             totaln += n;
         }
 

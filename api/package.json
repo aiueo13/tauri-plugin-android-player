@@ -1,6 +1,6 @@
 {
   "name": "tauri-plugin-android-player-api",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": "OkaYu",
   "description": "Media player for Tauri on Android",
   "keywords": ["tauri", "plugin", "android", "video", "player", "media"],
