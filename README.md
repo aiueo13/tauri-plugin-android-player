@@ -46,10 +46,10 @@ The following APIs are available for specifying the content:
 
 | API | Description |
 | --- | --- |
-| [MediaSource::from_uri](https://docs.rs/tauri-plugin-android-player/latest/tauri_plugin_android_player/enum.MediaSource.html#method.from_uri) | Specifies content from a URI. |
-| [MediaSource::from_path](https://docs.rs/tauri-plugin-android-player/latest/tauri_plugin_android_player/enum.MediaSource.html#method.from_path) | Specifies content from an absolute file path. |
-| [MediaSource::from_tauri_fs_path](https://docs.rs/tauri-plugin-android-player/latest/tauri_plugin_android_player/enum.MediaSource.html#method.from_tauri_fs_path) | Specifies content from a [tauri_plugin_fs::FilePath](https://docs.rs/tauri-plugin-fs/latest/tauri_plugin_fs/enum.FilePath.html), [tauri_plugin_android_fs::FsUri](https://docs.rs/tauri-plugin-android-fs/latest/tauri_plugin_android_fs/struct.FsUri.html), or other supported tauri filesystem path types. |
-| [MediaSource::from_read_seek](https://docs.rs/tauri-plugin-android-player/latest/tauri_plugin_android_player/enum.MediaSource.html#method.from_read_seek), [MediaSource::from_read_seek_opener](https://docs.rs/tauri-plugin-android-player/latest/tauri_plugin_android_player/enum.MediaSource.html#method.from_read_seek_opener) | Specifies arbitrary content data provided through [std::io::Read](https://doc.rust-lang.org/std/io/trait.Read.html) and [std::io::Seek](https://doc.rust-lang.org/std/io/trait.Seek.html). |
+| [MediaSource::from_uri](https://docs.rs/tauri-plugin-android-player/latest/tauri_plugin_android_player/struct.MediaSource.html#method.from_uri) | Specifies content from a URI. |
+| [MediaSource::from_path](https://docs.rs/tauri-plugin-android-player/latest/tauri_plugin_android_player/struct.MediaSource.html#method.from_path) | Specifies content from an absolute file path. |
+| [MediaSource::from_tauri_fs_path](https://docs.rs/tauri-plugin-android-player/latest/tauri_plugin_android_player/struct.MediaSource.html#method.from_tauri_fs_path) | Specifies content from a [tauri_plugin_fs::FilePath](https://docs.rs/tauri-plugin-fs/latest/tauri_plugin_fs/enum.FilePath.html), [tauri_plugin_android_fs::FsUri](https://docs.rs/tauri-plugin-android-fs/latest/tauri_plugin_android_fs/struct.FsUri.html), or other supported tauri filesystem path types. |
+| [MediaSource::from_read_seek](https://docs.rs/tauri-plugin-android-player/latest/tauri_plugin_android_player/struct.MediaSource.html#method.from_read_seek), [MediaSource::from_read_seek_opener](https://docs.rs/tauri-plugin-android-player/latest/tauri_plugin_android_player/struct.MediaSource.html#method.from_read_seek_opener) | Specifies arbitrary content data provided through [std::io::Read](https://doc.rust-lang.org/std/io/trait.Read.html) and [std::io::Seek](https://doc.rust-lang.org/std/io/trait.Seek.html). |
 
 
 # License

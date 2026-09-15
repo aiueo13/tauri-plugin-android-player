@@ -12,7 +12,7 @@ First, install the plugin to your Tauri project:
 
 ```toml
 [dependencies]
-tauri-plugin-android-player = "0.2.0"
+tauri-plugin-android-player = "0.2.1"
 ```
 
 Next, register the plugin:
@@ -43,11 +43,11 @@ Then, configure the APIs that can be called from the frontend JavaScript binding
 Finally, install the frontend JavaScript bindings:
 
 ```bash
-pnpm add tauri-plugin-android-player-api@0.2.0 -E
+pnpm add tauri-plugin-android-player-api@0.2.1 -E
 # or
-npm install tauri-plugin-android-player-api@0.2.0 --save-exact
+npm install tauri-plugin-android-player-api@0.2.1 --save-exact
 # or
-yarn add tauri-plugin-android-player-api@0.2.0 --exact
+yarn add tauri-plugin-android-player-api@0.2.1 --exact
 ```
 
 **NOTE**: Please ensure that the backend package, `tauri-plugin-android-player` (crates io), and the frontend package, `tauri-plugin-android-player-api` (npm), have exactly matching versions.
