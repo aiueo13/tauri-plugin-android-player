@@ -49,6 +49,13 @@ export type AndroidVideoPlayerOptions = {
    * If undefined, inherit the `FLAG_SECURE` state of the caller.
    */
   preventScreenCapture?: boolean,
+
+  /**
+   * Indicates whether to close the video player and return an error when playback fails.
+   * 
+   * Defaults to `false`.
+   */
+  rejectOnPlaybackError?: boolean,
 }
 
 export type AndroidVideoPlayerResponse = {
@@ -65,10 +72,10 @@ export type AndroidVideoPlayerResponse = {
  * `options.initialSrcIndex` can be used to specify the video to play initially.
  * 
  * @param src - Media sources of the videos to play. An absolute file path, Android content URI, HTTP(S) URL, or similar source can be used. Supports common video and audio formats, as well as HLS and DASH. See [supported-formats](https://developer.android.com/media/media3/exoplayer/supported-formats) for details.
- * @param options - Optional settings: `initialSrcIndex`, `initialSrcTimeMs`, `autoplay`, `keepScreenOn`, `preventScreenCapture`. See `AndroidVideoPlayerOptions` for details.
+ * @param options - Optional settings: `initialSrcIndex`, `initialSrcTimeMs`, `autoplay`, `keepScreenOn`, `preventScreenCapture`. See `AndroidVideoPlayerOptions`, `rejectOnPlaybackError`. See `AndroidVideoPlayerOptions` for details.
  * 
  * @returns Promise that resolves when the video player closes.
- * @throws The returned Promise is rejected with an error if an invalid value/type is passed as an argument, such as when `options.initialSrcIndex` is out of range. Note that the Promise is not rejected if the media content specified by `src` cannot be played or `src` is an invalid value. Instead, an error message is displayed in the video player, and the Promise is resolved normally when the video player is closed.
+ * @throws The returned Promise is rejected with an error if an illegal value/type is passed as an argument, such as when `options.initialSrcIndex` is out of range, `src` is an empty array, and etc. Note that the Promise is not rejected if the media content specified by `src` cannot be played or `src` contains an invalid value. Instead, an indication that an error occurred is displayed in the video player, and this method returns successfully when the video player is closed. To close the video player and reject the Promise in such cases, enable `options.rejectOnPlaybackError`.
  * 
  * @see {@link https://docs.rs/tauri-plugin-android-player/latest/tauri_plugin_android_player/struct.AndroidPlayer.html#method.open_video_player | AndroidPlayer::open_video_player}
  */

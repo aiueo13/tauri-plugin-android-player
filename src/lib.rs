@@ -1,13 +1,15 @@
-#![cfg_attr(not(target_os = "android"), allow(unused_variables))]
+#![cfg_attr(not(target_os = "android"), allow(unused))]
 
 mod api;
 mod cmds;
 mod err;
 mod impls;
 mod utils;
+mod media_source;
 
 pub use api::*;
 pub use err::*;
+pub use media_source::*;
 
 /// Initializes the plugin.
 /// 
@@ -28,6 +30,7 @@ pub fn init<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R, ()> {
             use tauri::Manager as _;
 
             #[cfg(target_os = "android")] {
+
                 let handle = api.register_android_plugin(
                     crate::impls::PLUGIN_PACKAGE_NAME,
                     crate::impls::PLUGIN_MAIN_CLASS_NAME

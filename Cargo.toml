@@ -3,7 +3,7 @@ name = "tauri-plugin-android-player"
 authors = ["OkaYu"]
 keywords = ["tauri","plugin", "android", "video", "player"]
 description = "Media player for Tauri on Android"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 rust-version = "1.77.2"
 exclude = [
@@ -31,6 +31,7 @@ tauri-plugin-fs = "2"
 
 [target.'cfg(target_os = "android")'.dependencies]
 jni = "0.21"
+bytemuck = "1.25"
 
 [build-dependencies]
 tauri-plugin = { version = "^2.4", features = ["build"] }

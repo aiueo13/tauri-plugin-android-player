@@ -1,7 +1,7 @@
 Note: **I’m using a translation tool, so some expressions may be awkward or inaccurate.**
 
 # Overview
-This plugin provides a video player based on ExoPlayer.
+This plugin provides a video player based on `media3 ExoPlayer`.
 
 ![demo image](https://raw.githubusercontent.com/aiueo13/tauri-plugin-android-player/main/assets/video-player-demo.webp)
 
@@ -12,7 +12,7 @@ First, install the plugin to your Tauri project:
 
 ```toml
 [dependencies]
-tauri-plugin-android-player = "0.1.0"
+tauri-plugin-android-player = "0.2.0"
 ```
 
 Next, register the plugin:
@@ -43,11 +43,11 @@ Then, configure the APIs that can be called from the frontend JavaScript binding
 Finally, install the frontend JavaScript bindings:
 
 ```bash
-pnpm add tauri-plugin-android-player-api@0.1.0 -E
+pnpm add tauri-plugin-android-player-api@0.2.0 -E
 # or
-npm install tauri-plugin-android-player-api@0.1.0 --save-exact
+npm install tauri-plugin-android-player-api@0.2.0 --save-exact
 # or
-yarn add tauri-plugin-android-player-api@0.1.0 --exact
+yarn add tauri-plugin-android-player-api@0.2.0 --exact
 ```
 
 **NOTE**: Please ensure that the backend package, `tauri-plugin-android-player` (crates io), and the frontend package, `tauri-plugin-android-player-api` (npm), have exactly matching versions.

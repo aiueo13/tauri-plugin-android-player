@@ -31,7 +31,7 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.ui.PlayerView
 import java.io.File
 
-@OptIn(UnstableApi::class) class TpapVideoPlayerActivity: AppCompatActivity() {
+@OptIn(UnstableApi::class) class VideoPlayerActivity: AppCompatActivity() {
     companion object {
         const val EXTRA_SRC = "src"
         const val EXTRA_SRC_TYPE = "srcType"
@@ -40,6 +40,7 @@ import java.io.File
         const val EXTRA_AUTOPLAY = "autoPlay"
         const val EXTRA_KEEP_SCREEN_ON = "keepScreenOn"
         const val EXTRA_PREVENT_SCREEN_CAPTURE = "preventScreenCapture"
+        const val EXTRA_REJECT_ON_PLAYBACK_EXCEPTION = "rejectOnPlaybackException"
 
         const val RESULT_EXTRA_ERROR_MESSAGE = "resultErrMsg"
         const val RESULT_EXTRA_LAST_SRC_TIME_MS = "resultLastSrcTimeMs"
@@ -59,6 +60,7 @@ import java.io.File
         val autoplay: Boolean,
         val keepScreenOn: Boolean,
         val preventScreenCapture: Boolean,
+        val rejectOnPlaybackException: Boolean,
     )
 
     private data class PlayerState(
@@ -99,6 +101,20 @@ import java.io.File
 
             // player のエラーメッセージの表示
             playerView.setErrorMessageProvider {
+                if (extra.rejectOnPlaybackException) {
+                    val errMsg = buildString {
+                        append("PlaybackException with error code ")
+                        append(it.errorCode)
+
+                        generateSequence<Throwable>(it) { it.cause }
+                            .take(10)
+                            .mapNotNull { it.message }
+                            .joinTo(this, prefix = "; ", separator = "; ")
+                    }
+
+                    finishWithError(errMsg)
+                }
+
                 android.util.Pair(it.errorCode, "This content cannot be played: ${it.errorCode}")
             }
 
@@ -142,7 +158,7 @@ import java.io.File
                 window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
             }
         }
-        catch(e: Exception) {
+        catch(e: Throwable) {
             finishWithError(e.message ?: "Playback error")
         }
     }
@@ -150,6 +166,7 @@ import java.io.File
     override fun onStart() {
         try {
             super.onStart()
+            if (isFinishing) return
 
             player = ExoPlayer.Builder(this).build().also {
                 playerView.player = it
@@ -174,12 +191,7 @@ import java.io.File
                     }
                 }
 
-                if (extra.src.size == 1 && repeatMode == Player.REPEAT_MODE_ALL) {
-                    it.repeatMode = Player.REPEAT_MODE_ONE
-                }
-                else {
-                    it.repeatMode = repeatMode
-                }
+                it.repeatMode = repeatMode
 
                 lastPlayerState?.let { state ->
                     it.seekTo(state.mediaItemIndex, state.position)
@@ -210,7 +222,7 @@ import java.io.File
                             }
                             if (streamId != null) {
                                 try {
-                                    MediaStream.deactivate(streamId)
+                                    MediaStreamBridge.deactivate(streamId)
                                 }
                                 catch (e: Throwable) {
                                     finishWithError(e.message ?: "Failed to deactivate media stream")
@@ -225,7 +237,7 @@ import java.io.File
                 it.prepare()
             }
         }
-        catch(e: Exception) {
+        catch(e: Throwable) {
             finishWithError(e.message ?: "Playback error")
         }
     }
@@ -289,6 +301,7 @@ import java.io.File
             autoplay = intent.getBooleanExtra(EXTRA_AUTOPLAY, true),
             keepScreenOn = intent.getBooleanExtra(EXTRA_KEEP_SCREEN_ON, true),
             preventScreenCapture = intent.getBooleanExtra(EXTRA_PREVENT_SCREEN_CAPTURE, true),
+            rejectOnPlaybackException = intent.getBooleanExtra(EXTRA_REJECT_ON_PLAYBACK_EXCEPTION, false)
         )
     }
 
@@ -391,7 +404,7 @@ class MediaStreamDataSource : DataSource {
                 PlaybackException.ERROR_CODE_IO_UNSPECIFIED
             )
 
-            val length = MediaStream.len(streamId);
+            val length = MediaStreamBridge.len(streamId);
             val position = dataSpec.position
             if (0 <= length && length < position) {
                 throw DataSourceException(
@@ -448,7 +461,7 @@ class MediaStreamDataSource : DataSource {
                 return C.RESULT_END_OF_INPUT
             }
 
-            val n = MediaStream.read(state.streamId, state.position, length, buffer, offset)
+            val n = MediaStreamBridge.read(state.streamId, state.position, length, buffer, offset)
             return when {
                 0 < n -> {
                     state.position += n;
