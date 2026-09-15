@@ -212,8 +212,8 @@ import java.io.File
                                 try {
                                     MediaStream.deactivate(streamId)
                                 }
-                                catch (e: Exception) {
-                                    finishWithError(e.toString())
+                                catch (e: Throwable) {
+                                    finishWithError(e.message ?: "Failed to deactivate media stream")
                                 }
                             }
                         }
@@ -385,55 +385,62 @@ class MediaStreamDataSource : DataSource {
     private var state: State? = null
 
     override fun open(dataSpec: DataSpec): Long {
-        val streamId = getStreamIdFromUri(dataSpec.uri.toString()) ?: throw DataSourceException(
-            "Illegal uri format: missing streamId",
-            PlaybackException.ERROR_CODE_IO_UNSPECIFIED
-        )
-
-        val length = try {
-            MediaStream.activate(streamId)
-        }
-        catch (e: Exception) {
-            throw DataSourceException(
-                e.message ?: "Failed to open media stream",
-                e,
+        try {
+            val streamId = getStreamIdFromUri(dataSpec.uri.toString()) ?: throw DataSourceException(
+                "Illegal uri format: missing streamId",
                 PlaybackException.ERROR_CODE_IO_UNSPECIFIED
             )
-        }
 
-        val position = dataSpec.position
-        if (0 <= length && length < position) {
+            val length = MediaStream.len(streamId);
+            val position = dataSpec.position
+            if (0 <= length && length < position) {
+                throw DataSourceException(
+                    "Position out of range: $position > $length",
+                    PlaybackException.ERROR_CODE_IO_READ_POSITION_OUT_OF_RANGE
+                )
+            }
+
+            state = State(
+                uri = dataSpec.uri,
+                streamId = streamId,
+                position = position,
+                totalLength = length
+            )
+
+            return if (length < 0) {
+                C.LENGTH_UNSET.toLong()
+            }
+            else if (dataSpec.length == C.LENGTH_UNSET.toLong()) {
+                length - position
+            }
+            else {
+                minOf(dataSpec.length, length - position)
+            }
+        }
+        catch (e: DataSourceException) {
+            throw e
+        }
+        catch (e: MediaStreamBridge.MediaStreamException) {
             throw DataSourceException(
-                "Position out of range: $position > $length",
-                PlaybackException.ERROR_CODE_IO_READ_POSITION_OUT_OF_RANGE
+                e.message ?: "Failed to open media stream",
+                e.errorCode,
             )
         }
-
-        state = State(
-            uri = dataSpec.uri,
-            streamId = streamId,
-            position = position,
-            totalLength = length
-        )
-
-        return if (length < 0) {
-            C.LENGTH_UNSET.toLong()
-        }
-        else if (dataSpec.length == C.LENGTH_UNSET.toLong()) {
-            length - position
-        }
-        else {
-            minOf(dataSpec.length, length - position)
+        catch (e: Throwable) {
+            throw DataSourceException(
+                e.message ?: "Failed to open media stream",
+                PlaybackException.ERROR_CODE_IO_UNSPECIFIED
+            )
         }
     }
 
     override fun read(buffer: ByteArray, offset: Int, length: Int): Int {
-        val state = state ?: throw DataSourceException(
-            "Missing state",
-            PlaybackException.ERROR_CODE_IO_UNSPECIFIED
-        )
-
         try {
+            val state = state ?: throw DataSourceException(
+                "Missing state",
+                PlaybackException.ERROR_CODE_IO_UNSPECIFIED
+            )
+
             if (state.totalLength == 0L) {
                 return C.RESULT_END_OF_INPUT
             }
@@ -450,10 +457,18 @@ class MediaStreamDataSource : DataSource {
                 else -> C.RESULT_END_OF_INPUT
             }
         }
-        catch (e: Exception) {
+        catch (e: DataSourceException) {
+            throw e
+        }
+        catch (e: MediaStreamBridge.MediaStreamException) {
             throw DataSourceException(
                 e.message ?: "Failed to read media stream",
-                e,
+                e.errorCode
+            )
+        }
+        catch (e: Throwable) {
+            throw DataSourceException(
+                e.message ?: "Failed to read media stream",
                 PlaybackException.ERROR_CODE_IO_UNSPECIFIED
             )
         }
@@ -461,7 +476,7 @@ class MediaStreamDataSource : DataSource {
 
     override fun close() {
         state = null
-        // MediaStream.deactivateはここでは呼ばない。
+        // MediaStreamBridge.deactivateはここでは呼ばない。
     }
 
     override fun getUri(): Uri? = state?.uri
