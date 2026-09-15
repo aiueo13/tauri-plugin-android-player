@@ -12,7 +12,7 @@ First, install the plugin to your Tauri project:
 
 ```toml
 [dependencies]
-tauri-plugin-android-player = "0.2.1"
+tauri-plugin-android-player = "0.2.2"
 ```
 
 Next, register the plugin:
@@ -43,16 +43,16 @@ Then, configure the APIs that can be called from the frontend JavaScript binding
 Finally, install the frontend JavaScript bindings:
 
 ```bash
-pnpm add tauri-plugin-android-player-api@0.2.1 -E
+pnpm add tauri-plugin-android-player-api@0.2.2 -E
 # or
-npm install tauri-plugin-android-player-api@0.2.1 --save-exact
+npm install tauri-plugin-android-player-api@0.2.2 --save-exact
 # or
-yarn add tauri-plugin-android-player-api@0.2.1 --exact
+yarn add tauri-plugin-android-player-api@0.2.2 --exact
 ```
 
 **NOTE**: Please ensure that the backend package, `tauri-plugin-android-player` (crates io), and the frontend package, `tauri-plugin-android-player-api` (npm), have exactly matching versions.
 
-[![crates.io](https://img.shields.io/crates/v/tauri-plugin-android-palyer.svg?color=yellow)](https://crates.io/crates/tauri-plugin-android-player) [![npm version](https://img.shields.io/npm/v/tauri-plugin-android-player-api.svg?color=red)](https://www.npmjs.com/package/tauri-plugin-android-player-api)
+[![crates.io](https://img.shields.io/crates/v/tauri-plugin-android-player.svg?color=yellow)](https://crates.io/crates/tauri-plugin-android-player) [![npm version](https://img.shields.io/npm/v/tauri-plugin-android-player-api.svg?color=red)](https://www.npmjs.com/package/tauri-plugin-android-player-api)
 
 # Usage
 
